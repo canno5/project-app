@@ -7,13 +7,19 @@ let contactSchema = new Schema({
     },
     phone: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     }, email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     }, message: {
-        type: String
+        type: String,
+        required: true
+
     }
+}, {
+    timestamps: true
 });
 let contactModel = model("contacts", contactSchema);
 module.exports = contactModel;
