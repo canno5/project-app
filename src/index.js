@@ -1,0 +1,92 @@
+const express = require("express")
+const app = express();
+let PORT = 1000 || process.env.PORT
+let path = require("path");
+require("dotenv").config({ path: ".env" });
+const dbFunc = require("../controller/db/conn");
+let staticPath = path.join(__dirname, "../controller/static")
+let tempPath = path.join(__dirname, "../controller/template/views");
+
+const fs = require("fs");
+const contactModel = require("../controller/models/Contact");
+
+app.use("/static", express.static(staticPath));
+app.set("view engine", "html");
+app.set("views", tempPath);
+app.use(express.static(staticPath))
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json())
+app.engine("html", function (path, option, cb) {
+    fs.readFile(path, (err, data) => {
+        if (err) {
+            cb(err);
+            // return err
+        }
+        let htmlData = data.toString()
+        cb(null, htmlData)
+    })
+});
+app.get("/", (req, res) => {
+    try {
+        res.status(200).render("index");
+    } catch (err) {
+        return err
+    }
+});
+app.get("/about", (req, res) => {
+    try {
+        res.status(200).render('about');
+    } catch (err) {
+        return err;
+    }
+});
+app.get("/services", (req, res) => {
+    try {
+        res.status(200).render("services");
+    } catch (err) {
+        return err
+    }
+
+});
+app.get("/contact", (req, res) => {
+    try {
+        res.status(200).render("contact");
+
+    } catch (err) {
+        return err
+
+    }
+
+});
+app.post("/contact", async (req, res) => {
+    try {
+        let { name, phone, email, message } = req.body
+        await contactModel.create({ name, phone, email, message });
+        res.status(201).json({ msg: "Thank You for Contact form Us" })
+
+    } catch (err) {
+        console.log('The Err', err)
+        return err
+
+    }
+});
+app.get("/project", (req, res) => {
+    res.status(200).render("project");
+
+});
+app.get("/reviews", (req, res) => {
+    res.status(200).render("review");
+});
+app.get("/error", (req, res) => {
+    try {
+        res.status(404).redirect('/')
+
+    } catch (error) {
+        console.log('Th Err', error)
+    }
+})
+dbFunc().then(() => {
+    app.listen(PORT, () => {
+        console.log('I am live to the port ' + PORT)
+    });
+});
