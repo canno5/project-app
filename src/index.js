@@ -1,6 +1,6 @@
 const express = require("express")
 const app = express();
-let PORT = 1000 
+let port = 1000 
 let path = require("path");
 require("dotenv").config({ path: ".env" });
 const dbFunc = require("../controller/db/conn");
